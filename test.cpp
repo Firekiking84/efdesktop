@@ -1,40 +1,43 @@
 #include <iostream>
-#include <string>
-
-class Person {
-private:
-    std::string name;
-    int age;
-
-public:
-    // Constructeur principal
-    Person(const std::string& name, int age) : name(name), age(age) {
-        std::cout << "Constructeur principal appelé\n";
-    }
-
-    // Constructeur qui délègue au constructeur principal
-    Person() : Person("Inconnu", 0) {
-        std::cout << "Constructeur par défaut appelé\n";
-    }
-
-    // Un autre constructeur qui délègue au constructeur principal
-    Person(const std::string& name) : Person(name, 0) {
-        std::cout << "Constructeur avec nom appelé\n";
-    }
-
-    void display() const {
-        std::cout << "Nom: " << name << ", Age: " << age << '\n';
-    }
-};
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 int main() {
-    Person p1;                // Appel du constructeur par défaut
-    Person p2("Alice");       // Appel du constructeur avec nom
-    Person p3("Bob", 25);     // Appel du constructeur principal
+    int pipefd[2];
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        return 1;
+    }
 
-    p1.display();
-    p2.display();
-    p3.display();
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        return 1;
+    }
+
+    if (pid == 0) { // Code du processus enfant
+        close(pipefd[0]); // Ferme l'extrémité de lecture du pipe
+
+        // Rediriger la sortie standard vers le pipe
+        dup2(pipefd[1], STDOUT_FILENO); // dup2 copie pipefd[1] dans STDOUT_FILENO
+        close(pipefd[1]); // Ferme l'extrémité d'écriture du pipe après la redirection
+
+        // Exécution d'une commande (exemple : ls)
+        execlp("ls", "ls", NULL);
+    } else { // Code du processus parent
+        close(pipefd[1]); // Ferme l'extrémité d'écriture du pipe
+
+        // Attendre que le processus enfant termine
+        wait(NULL);
+
+        // Lecture des données du pipe (résultat de la commande ls)
+        char buffer[100];
+        read(pipefd[0], buffer, sizeof(buffer));
+        std::cout << "Résultat de la commande ls : \n" << buffer << std::endl;
+
+        close(pipefd[0]); // Ferme l'extrémité de lecture du pipe
+    }
 
     return 0;
 }

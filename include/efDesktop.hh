@@ -13,7 +13,8 @@
 #define		__EF_DESKTOP_HH__
 
 #include	"window.hh"
-#include	"allocator.hh"
+
+#include	<vector>
 
 namespace	ef
 {
@@ -24,12 +25,17 @@ namespace	ef
     EfDesktop(std::string const	&conf);
     ~EfDesktop();
 
-    void	editMaxMemory(size_t		newSize);
     void	addNewWindow(t_bunny_position	pos,
 			     t_bunny_size	size,
 			     t_bunny_color	color);
+
+    // Dispatch events to all elements
+    void	events(const t_bunny_event				*event);
+
+    // Display the elements
+    void	display(Pixels						&pixels);
+
   private:
-    Allocator			alloc;
     std::vector<Window>		windows;
 
     void	parseDabsic(std::string const	&conf);

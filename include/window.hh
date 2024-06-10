@@ -12,6 +12,7 @@
 
 #define		__WINDOW_HH__
 
+#include	"content.hh"
 #include	"pixels.hh"
 
 #include	<lapin.h>
@@ -32,6 +33,7 @@ namespace	ef
     S_TOP_RIGHT
   }			t_side;
 
+  // Window of desktop
   class		Window
   {
   public:
@@ -40,7 +42,7 @@ namespace	ef
     Window(t_bunny_position	_pos,
 	   t_bunny_size		_size,
 	   t_bunny_color	_color,
-	   Allocator		*_alloc=NULL);
+	   IContent		*_content=NULL);
 
     // Window copy constructor
     Window(Window const		&other);
@@ -57,8 +59,10 @@ namespace	ef
     // Display the window
     void	display(Pixels						&pixels);
 
+    // Change the window content
+    void	changeContent(I_Content					*_content);
+
   private:
-    Allocator		*alloc;
     t_bunny_position	pos;
     t_bunny_position	pos_end;
     t_bunny_position	head_pos_end;
@@ -68,7 +72,15 @@ namespace	ef
     bool		is_resize;
     int			side_resize;
     t_bunny_position	delta_click;
+    IContent		*content;
 
+    // Sub function of events
+    // Format the position of the window into drawPos to not draw out of the canvas
+    void	formatDrawPos(t_bunny_position				pos,
+			      t_bunny_position				pos_end,
+			      t_bunny_size				size_px,
+			      t_bunny_position				*drawPos);
+    
     // Sub function of events
     // Deal with mouse movements
     void	manageMouseMoved(t_bunny_mouse_move_event const		*event);

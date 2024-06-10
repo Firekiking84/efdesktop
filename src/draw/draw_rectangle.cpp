@@ -4,16 +4,30 @@
 ** ***     ***     ***     ******  *******  *****      **********************
 ** **  ******  ******  *** *****  *******  *********  ***********************
 ** *     ***  ******  *** ***       ****  *****      ************************
-** 06/06/2024 13:05:47 ******************************************************
+** 27/05/2024 01:48:05 ******************************************************
 ** keryan.houssin <keryan.houssin@aldrin.efrits.fr>
-** - EfDesktop -
+** - Clickodrome -
 ** * *** * * ***  ** * ** ** ** ** * * * *** * **  **************************
 */
 
-#include	"efDesktop.hh"
+#include		"draw.h"
 
-int		main(void)
+void		        draw_rectangle(t_bunny_pixelarray	*px,
+				       t_bunny_position		*posStart,
+				       t_bunny_position		*posEnd,
+				       t_bunny_color		*col)
 {
-  EfDesktop	desk();
-  
+  t_bunny_position	drawPos;
+
+  drawPos.y = posStart->y;
+  while (drawPos.y < posEnd->y)
+    {
+      drawPos.x = posStart->x;
+      while (drawPos.x < posEnd->x)
+	{
+	  set_pixel(px, drawPos, col);
+	  drawPos.x += 1;
+	}
+      drawPos.y += 1;
+    }
 }

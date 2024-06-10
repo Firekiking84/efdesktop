@@ -44,7 +44,7 @@ lib:$(LIBFILE)
 
 clean:
 	rm -f Makefile~
-	rm -f $(OBJS)
+	rm -f $(shell find ./ -name "*.o")
 	rm -f $(shell find ./ -name "*~")
 	rm -f $(shell find ./ -name "*.gcno")
 	rm -f $(shell find ./ -name "*.gcov")
